@@ -8,6 +8,7 @@ import java.util.Set;
 public class Role {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private long roleId;
 
     private String name;

@@ -5,6 +5,7 @@ import com.itemsharing.userservice.model.Role;
 import com.itemsharing.userservice.model.User;
 import com.itemsharing.userservice.model.UserRole;
 import com.itemsharing.userservice.repository.UserRepository;
+import com.itemsharing.userservice.service.RoleService;
 import com.itemsharing.userservice.service.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,6 +24,9 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private RoleService roleService;
+
     @Override
     public User createUser(User user) {
         User localUser = userRepository.findByUsername(user.getUsername());
@@ -30,8 +34,7 @@ public class UserServiceImpl implements UserService {
             LOG.info("User is already existing");
         }else{
             Set<UserRole> userRoles = new HashSet<>();
-            Role localRole = new Role();
-            localRole.setRoleId(1);
+            Role localRole = roleService.getRoleByName("ROLE_USER");
             userRoles.add(new UserRole(user, localRole));
             user.getUserRoles().addAll(userRoles);
             user.setJoinDate(new Date());
