@@ -8,6 +8,8 @@ server:
 spring:
   jpa:
     show-sql: true
+  application:
+    name: userservice
 
 
 eureka:

@@ -7,31 +7,33 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.stereotype.Service;
 
+import com.itemsharing.itemservice.client.UserserviceFeignClient;
 import com.itemsharing.itemservice.model.Item;
 import com.itemsharing.itemservice.model.User;
 import com.itemsharing.itemservice.repository.ItemRepository;
 import com.itemsharing.itemservice.repository.UserRepository;
 import com.itemsharing.itemservice.service.ItemService;
-import com.itemsharing.itemservice.service.UserService;
 
 /**
  * @author <a href="mailto:czhang@lexon-corp.com">Chengyi Zhang</a>
  */
 @Service
+@EnableAutoConfiguration
 public class ItemServiceImpl implements ItemService{
 
 	private static final Logger LOG = LoggerFactory.getLogger(ItemServiceImpl.class);
-
-	@Autowired
-	private UserService userService;
 
 	@Autowired
 	private ItemRepository itemRepository;
 
 	@Autowired
 	private UserRepository userRepository;
+
+	@Autowired
+	private UserserviceFeignClient userserviceFeignClient;
 
 
 	@Override
@@ -44,7 +46,7 @@ public class ItemServiceImpl implements ItemService{
 
 		Date date = new Date();
 		item.setAddDate(date);
-		User user = userService.findUserByUsername(username);
+		User user = userserviceFeignClient.findUserByUsername(username);
 		if(user==null){
 			user = new User();
 			user.setUsername(username);
@@ -62,7 +64,7 @@ public class ItemServiceImpl implements ItemService{
 
 	@Override
 	public List<Item> getItemsByUsername(String username) {
-		User user = userService.findUserByUsername(username);
+		User user = userserviceFeignClient.findUserByUsername(username);
 		return itemRepository.findByUser(user);
 	}
 
@@ -90,6 +92,6 @@ public class ItemServiceImpl implements ItemService{
 
 	@Override
 	public User getUserByUsername(String username) {
-		return userService.findUserByUsername(username);
+		return userserviceFeignClient.findUserByUsername(username);
 	}
 }

@@ -5,8 +5,9 @@
 .metadata/
 .recommenders/
 *.iml
-target/
 test-output/
 *.faces-config.xml.jsfdia
 .tern-project
 *.bak
+*.class
+.target/
