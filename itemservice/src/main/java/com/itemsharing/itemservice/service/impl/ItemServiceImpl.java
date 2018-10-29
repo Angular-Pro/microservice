@@ -3,6 +3,7 @@ package com.itemsharing.itemservice.service.impl;
 import java.io.IOException;
 import java.util.Date;
 import java.util.List;
+import java.util.Random;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,6 +17,8 @@ import com.itemsharing.itemservice.model.User;
 import com.itemsharing.itemservice.repository.ItemRepository;
 import com.itemsharing.itemservice.repository.UserRepository;
 import com.itemsharing.itemservice.service.ItemService;
+import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
+import com.netflix.hystrix.contrib.javanica.utils.FallbackMethod;
 
 /**
  * @author <a href="mailto:czhang@lexon-corp.com">Chengyi Zhang</a>
@@ -91,7 +94,31 @@ public class ItemServiceImpl implements ItemService{
 	}
 
 	@Override
+	@HystrixCommand(fallbackMethod="buildFallbackUser")
 	public User getUserByUsername(String username) {
+		randomlyRunlong();
 		return userserviceFeignClient.findUserByUsername(username);
+	}
+
+	private void randomlyRunlong(){
+		Random random = new Random();
+		int randomNum = random.nextInt((3-1) + 1) + 1;
+		if(randomNum == 3){
+			sleep();
+		}
+	}
+	private void sleep(){
+		try{
+			Thread.sleep(10000);
+		}catch (InterruptedException e){
+			e.printStackTrace();
+		}
+	}
+
+	private User buildFallbackUser(String username){
+		User user = new User();
+		user.setId(999999L);
+		user.setUsername("Failed");
+		return user;
 	}
 }
